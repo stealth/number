@@ -138,6 +138,22 @@ int filter_ecpoint(BIGNUM *bn)
 	bool has_point = 0;
 
 	map<string, int> name2nid{
+#ifdef NID_brainpoolP160r1
+		{"brainpoolP160r1", NID_brainpoolP160r1},
+		{"brainpoolP160t1", NID_brainpoolP160t1},
+		{"brainpoolP192r1", NID_brainpoolP192r1},
+		{"brainpoolP192t1", NID_brainpoolP192t1},
+		{"brainpoolP224r1", NID_brainpoolP224r1},
+		{"brainpoolP224t1", NID_brainpoolP224t1},
+		{"brainpoolP256r1", NID_brainpoolP256r1},
+		{"brainpoolP256t1", NID_brainpoolP256t1},
+		{"brainpoolP320r1", NID_brainpoolP320r1},
+		{"brainpoolP320t1", NID_brainpoolP320t1},
+		{"brainpoolP384r1", NID_brainpoolP384r1},
+		{"brainpoolP384t1", NID_brainpoolP384t1},
+		{"brainpoolP512r1", NID_brainpoolP512r1},
+		{"brainpoolP512t1", NID_brainpoolP512t1},
+#endif
 		{"secp112r1", NID_secp112r1},
 		{"secp112r2", NID_secp112r2},
 		{"secp128r1", NID_secp128r1},
