@@ -45,7 +45,7 @@ class number {
 		{"prime", filter_prime},
 		{"ecpoint", filter_ecpoint},
 		{"hash", filter_hash},
-		{"ssh-moduli", filter_match_ssh}
+		{"match", filter_match}
 	};
 
 public:

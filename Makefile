@@ -46,3 +46,10 @@ number.o: number.cc number.h
 filters.o: filters.cc filters.h
 	$(CXX) -c $(CXXFLAGS) $<
 
+install:
+	cp -r share /usr/share/number
+	chown root.root /usr/share/number
+	chown root.root /usr/share/number/numbers.txt
+	chmod 0755 /usr/share/number
+	chmod 0644 /usr/share/number/numbers.txt
+

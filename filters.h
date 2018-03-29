@@ -46,7 +46,7 @@ int filter_ecpoint(BIGNUM *);
 
 int filter_hash(BIGNUM *);
 
-int filter_match_ssh(BIGNUM *);
+int filter_match(BIGNUM *);
 
 }
 

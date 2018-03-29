@@ -241,19 +241,19 @@ void fclose(FILE *f)
 }
 
 
-int filter_match_ssh(BIGNUM *bn)
+int filter_match(BIGNUM *bn)
 {
 	if (!bn)
 		return -1;
 
-	// check ssh moduli
-	free_ptr<FILE> f(fopen("/etc/ssh/moduli", "r"), number::fclose);
+	// check match DB
+	free_ptr<FILE> f(fopen("/usr/share/number/numbers.txt", "r"), number::fclose);
 	if (!f.get())
 		return -1;
 
-	bool has_moduli = 0;
+	bool match = 0;
 	char buf[8192] = {0};
-	string line = "";
+	string line = "", s1 = "", s2 = "";
 	string::size_type idx = 0;
 	free_ptr<BIGNUM> moduli(nullptr, BN_free);
 	BIGNUM *bn2 = nullptr;
@@ -263,20 +263,24 @@ int filter_match_ssh(BIGNUM *bn)
 		if (!fgets(buf, sizeof(buf) - 1, f.get()))
 			break;
 		line = buf;
-		if ((idx = line.rfind(" ")) == string::npos)
+		if ((idx = line.find(",")) == string::npos)
 			continue;
+		s1 = line.substr(0, idx);
 		line.erase(0, idx + 1);
+		if ((idx = line.find(",")) == string::npos)
+			continue;
+		s2 = line.substr(0, idx);
 		bn2 = nullptr;
-		if (BN_hex2bn(&bn2, line.c_str()) == 0)
+		if (BN_hex2bn(&bn2, s1.c_str()) == 0)
 			continue;
 		moduli.reset(bn2);
 		if (BN_cmp(bn, moduli.get()) == 0) {
-			has_moduli = 1;
+			match = 1;
 			break;
 		}
 	}
 
-	printf("SSH moduli: %s\n", has_moduli ? "Yes" : "No");
+	printf("match: %s\n", match ? s2.c_str() : "No");
 	return 0;
 }
 
