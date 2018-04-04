@@ -135,8 +135,6 @@ int filter_ecpoint(BIGNUM *bn)
 	if (!bn)
 		return -1;
 
-	bool has_point = 0;
-
 	map<string, int> name2nid{
 #ifdef NID_brainpoolP160r1
 		{"brainpoolP160r1", NID_brainpoolP160r1},
@@ -195,20 +193,33 @@ int filter_ecpoint(BIGNUM *bn)
 	};
 
 	free_ptr<EC_GROUP> ecg(nullptr, EC_GROUP_free);
+	free_ptr<BIGNUM> p(BN_new(), BN_free), a(BN_new(), BN_free), b(BN_new(), BN_free);
+	if (!p.get() || !a.get() || !b.get())
+		return -1;
+
 	EC_POINT *ecp = nullptr;
+	string r = "";
 	for (auto it = name2nid.begin(); it != name2nid.end(); ++it) {
 		ecg.reset(EC_GROUP_new_by_curve_name(it->second));
 		if (!ecg.get())
 			continue;
+		// EC_GROUP_get_curve_GFp is as good as the GF2m variant, as its just a wrapper
+		// for the ->meth->group_get_curve() call
+		if (EC_GROUP_get_curve_GFp(ecg.get(), p.get(), a.get(), b.get(), nullptr) == 1) {
+			if (BN_cmp(p.get(), bn) == 0)
+				r += it->first + " prime,";
+			else if (BN_cmp(a.get(), bn) == 0)
+				r += it->first + " a,";
+			else if (BN_cmp(b.get(), bn) == 0)
+				r += it->first + " b,";
+		}
 		if ((ecp = EC_POINT_bn2point(ecg.get(), bn, nullptr, nullptr)) != nullptr) {
 			EC_POINT_free(ecp);
-			printf("ec-point: %s\n", it->first.c_str());
-			has_point = 1;
+			r += it->first + " point,";
 		}
 	}
 
-	if (!has_point)
-		printf("ec-point: No\n");
+	printf("ec: %s\n", r.size() > 0 ? r.c_str() : "No");
 
 	return 0;
 }
