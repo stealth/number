@@ -42,6 +42,8 @@ int filter_b64(BIGNUM *);
 
 int filter_mpi(BIGNUM *);
 
+int filter_le(BIGNUM *);
+
 int filter_ecpoint(BIGNUM *);
 
 int filter_hash(BIGNUM *);

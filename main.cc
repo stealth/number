@@ -30,15 +30,16 @@ using namespace number;
 
 void usage()
 {
-	printf("\nnumber (C) 2018 Sebastian Krahmer -- https://guthub.com/stealth/number\n\n"
+	printf("\nnumber (C) 2018 Sebastian Krahmer -- https://github.com/stealth/number\n\n"
 	       " number <-xdbm number> [-XDBM]\n\n"
 	       "\t-x input is hex\n"
 	       "\t-d input is dec\n"
-	       "\t-b input is base64 BIGNUM\n"
+	       "\t-b input is base64 BIGNUM (base64(BN_bn2bin()) output)\n"
 	       "\t-m input is base64 MPI\n"
 	       "\t-X add hex output filter\n"
 	       "\t-D add dec output filter\n"
 	       "\t-B add base64 BIGNUM output filter\n"
+	       "\t-L add LE output filter (does not affect other out filters)\n"
 	       "\t-M add base64 MPI output filter\n\n");
 
 	exit(1);
@@ -58,13 +59,14 @@ int main(int argc, char **argv)
 		OUTMODE_HEX	= 0x1000,
 		OUTMODE_DEC	= 0x2000,
 		OUTMODE_B64	= 0x4000,
-		OUTMODE_MPI	= 0x8000
+		OUTMODE_MPI	= 0x8000,
+		OUTMODE_LE	= 0x10000
 	};
 	uint32_t mode = modes::MODE_INVALID;
 	int c;
 	string n = "", filter = "";
 
-	while ((c = getopt(argc, argv, "x:d:b:m:XDBM")) != -1) {
+	while ((c = getopt(argc, argv, "x:d:b:m:XDBML")) != -1) {
 		switch (c) {
 		case 'x':
 			n = optarg;
@@ -94,6 +96,9 @@ int main(int argc, char **argv)
 		case 'M':
 			mode |= modes::OUTMODE_MPI;
 			break;
+		case 'L':
+			mode |= modes::OUTMODE_LE;
+			break;
 		default:
 			usage();
 		}
@@ -120,6 +125,8 @@ int main(int argc, char **argv)
 		num.add_filter("base64", filter_b64);
 	if (mode & modes::OUTMODE_MPI)
 		num.add_filter("mpi", filter_mpi);
+	if (mode & modes::OUTMODE_LE)
+		num.add_filter("le", filter_le);
 
 	num.run_filter(filter);
 	return 0;

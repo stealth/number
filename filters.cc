@@ -225,6 +225,30 @@ int filter_ecpoint(BIGNUM *bn)
 }
 
 
+int filter_le(BIGNUM *bn)
+{
+	if (!bn)
+		return -1;
+
+	int n = 0;
+	if ((n = BN_num_bytes(bn)) < 0)
+		return -1;
+
+	unique_ptr<unsigned char[]> bin(new (nothrow) unsigned char[n]);
+	if (!bin.get())
+		return -1;
+
+	BN_bn2bin(bn, bin.get());
+
+	free_ptr<BIGNUM> lebn(BN_lebin2bn(bin.get(), n, nullptr), BN_free);
+	if (!lebn.get())
+		return -1;
+
+	printf("le: %s\n", BN_bn2hex(lebn.get()));
+	return 0;
+}
+
+
 int filter_hash(BIGNUM *bn)
 {
 	if (!bn)
