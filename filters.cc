@@ -254,17 +254,17 @@ int filter_hash(BIGNUM *bn)
 	if (!bn)
 		return -1;
 
-	map<int, string> bits2hash{
-		{128, "MD4, MD5"},
-		{160, "SHA1, RIPEMD-160"},
-		{192, "TIGER"},
-		{256, "SHA256"},
-		{512, "SHA512"}
+	map<int, string> bytes2hash{
+		{16, "MD4, MD5"},
+		{20, "SHA1, RIPEMD-160"},
+		{24, "TIGER"},
+		{32, "SHA256"},
+		{64, "SHA512"}
 	};
 
-	int n = BN_num_bits(bn);
-	auto it = bits2hash.find(n);
-	printf("hash: %s\n", (it == bits2hash.end()) ? "No" : it->second.c_str());
+	int n = BN_num_bytes(bn);
+	auto it = bytes2hash.find(n);
+	printf("hash: %s\n", (it == bytes2hash.end()) ? "No" : it->second.c_str());
 	return 0;
 }
 
